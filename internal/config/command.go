@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Joshua-Pok/BlogAggregator/internal/database"
-	"github.com/google/uuid"
 	"log"
 	"time"
+
+	"github.com/Joshua-Pok/BlogAggregator/internal/database"
+	"github.com/Joshua-Pok/BlogAggregator/internal/rss"
+	"github.com/google/uuid"
 )
 
 type Command struct {
@@ -60,6 +62,27 @@ func HandlerLogin(s *State, cmd Command) error {
 
 	fmt.Printf("User has been set to %v", username)
 	return nil
+
+}
+
+func HandlerAddFeed(s *State, cmd Command) error {
+	if len(cmd.Arguments) == 0 {
+		return errors.New("No arguments passed")
+	}
+
+	name := cmd.Arguments[0]
+	url := cmd.Arguments[1]
+
+	feed, err := rss.Addfeed(s, name, url)
+	if err != nil {
+		log.Fatalf("error adding feed: %v", err)
+	}
+
+	fmt.Println(feed)
+	return nil
+}
+
+func HandlerListFeeds(s *state, cmd Command) error {
 
 }
 
@@ -117,8 +140,4 @@ func users(s *State, cmd Command) ([]database.User, error) {
 	}
 
 	return users, nil
-}
-
-func addfeed(name string, url string) error {
-
 }

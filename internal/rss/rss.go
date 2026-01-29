@@ -3,9 +3,13 @@ package rss
 import (
 	"context"
 	"encoding/xml"
+	"github.com/Joshua-Pok/BlogAggregator/internal/config"
+	"github.com/Joshua-Pok/BlogAggregator/internal/database"
+	"github.com/google/uuid"
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 type RSSItem struct {
@@ -50,5 +54,41 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 	feed.Channel.Item = append(feed.Channel.Item, *content)
 
 	return feed, nil
+
+}
+
+func Addfeed(s *config.State, name string, url string) (database.Feed, error) {
+	username := s.Cfg.Current_user_name
+
+	user, err := s.Db.GetUser(context.Background(), username)
+	if err != nil {
+		return database.Feed{}, err
+	}
+
+	params := database.CreateFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      name,
+		Url:       url,
+		UserID:    user.ID,
+	}
+
+	feed, err := s.Db.CreateFeed(context.Background(), params)
+	if err != nil {
+		return database.Feed{}, err
+	}
+
+	return feed, nil
+}
+
+func ListFeeds() (s *config.State, []database.Feed, error) {
+
+	feeds, err := s.Db.GetFeeds()
+	if err != nil{
+		return [], err
+	}
+
+	return feeds, nil
 
 }
