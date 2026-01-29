@@ -97,20 +97,26 @@ func follow(s *config.State, url string) error {
 
 	user, err := s.Db.GetUser(context.Background(), s.Cfg.Current_user_name)
 
-
-	feeds, err := s.Db.GetFeedsByURL(url)
-	if err != nil{
-		return nil, err
+	feed, err := s.Db.GetFeedByURL(context.Background(), url)
+	if err != nil {
+		return err
 	}
-
 
 	params := database.CreateFeedFollowParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		UserID:    user.ID,
-		FeedID: feed.,
+		FeedID:    feed.ID,
 	}
-	s.Db.CreateFeedFollow()
+	_, err = s.Db.CreateFeedFollow(context.Background(), params)
+	if err != nil {
+		return err
+	}
+	return nil
 
 }
+
+// Return all feed follows for given user, include name of feeds and user in result
+
+func following() ([]database.Feed, error) {}
