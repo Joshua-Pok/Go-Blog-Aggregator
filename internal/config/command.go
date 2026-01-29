@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/Joshua-Pok/BlogAggregator/internal/config"
 	"github.com/Joshua-Pok/BlogAggregator/internal/database"
 	"github.com/Joshua-Pok/BlogAggregator/internal/rss"
 	"github.com/google/uuid"
@@ -82,7 +83,22 @@ func HandlerAddFeed(s *State, cmd Command) error {
 	return nil
 }
 
-func HandlerListFeeds(s *state, cmd Command) error {
+func HandlerListFeeds(s *State, cmd Command) error {
+	feeds, err := rss.ListFeeds(s)
+	if err != nil {
+		return err
+	}
+
+	for _, feed := range feeds {
+		fmt.Printf(
+			"Name: %s, | URL: %s | UserID: %d\n",
+			feed.Name,
+			feed.Url,
+			feed.UserID,
+		)
+	}
+
+	return nil
 
 }
 

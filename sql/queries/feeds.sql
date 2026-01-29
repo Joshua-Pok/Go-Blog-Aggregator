@@ -4,3 +4,7 @@ INSERT INTO feeds(id, created_at, updated_at, name, url, user_id) VALUES ($1, $2
 
 -- name: GetFeeds :many
 SELECT * FROM feeds;
+
+
+-- name: GetFeedsByURL :many
+SELECT * FROM feeds WHERE url = $1;

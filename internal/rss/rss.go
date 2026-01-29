@@ -82,13 +82,35 @@ func Addfeed(s *config.State, name string, url string) (database.Feed, error) {
 	return feed, nil
 }
 
-func ListFeeds() (s *config.State, []database.Feed, error) {
+func ListFeeds(s *config.State) ([]database.Feed, error) {
 
 	feeds, err := s.Db.GetFeeds()
-	if err != nil{
-		return [], err
+	if err != nil {
+		return nil, err
 	}
 
 	return feeds, nil
+
+}
+
+func follow(s *config.State, url string) error {
+
+	user, err := s.Db.GetUser(context.Background(), s.Cfg.Current_user_name)
+
+
+	feeds, err := s.Db.GetFeedsByURL(url)
+	if err != nil{
+		return nil, err
+	}
+
+
+	params := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID: feed.,
+	}
+	s.Db.CreateFeedFollow()
 
 }
